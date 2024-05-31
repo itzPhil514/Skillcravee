@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Afficher emplois</title>
+
+    <link rel="stylesheet" href="">
+</head>
+<body>
+<header>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+    <link th:href="@{/css/menuCSS.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/css/alert.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/css/recherche.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/css/tableGestion.css}" rel="stylesheet" type="text/css" />
+    <div class='tete'>
+        <div class="banniere">
+            <table>
+                <tr>
+                    <th><a th:href="@{/}"><img id="logo" th:src="@{images/logo.PNG}" alt="logo" /></a></th>
+                    <th><h1 id="titre">Skillcravee</h1></th>
+                </tr>
+            </table>
+        </div>
+        <div id='droite'>
+            <nav>
+                <ul id='liste'>
+
+                    <li class="active"><a th:href="@{/}">Accueil</a></li>
+
+                    <li>
+                        <div th:if="${session != null and session.role == 'étudiant'}">
+                            <a
+                                    th:href="@{/uploader}">Téléchargez CV
+                            </a>
+                        </div>
+                    </li>
+                    <li>
+                        <div th:if="${session != null and (session.role == 'entreprise' or session.role == 'admin')}">
+                            <a th:href="@{'/emploi/new'}" title="Ajouter un emploi">Ajouter un emploi</a>
+                        </div>
+                    </li>
+                    <li>
+                        <a
+                                th:href="@{/index/new}" th:unless="${not #strings.isEmpty(session.email)}">Inscription
+                        </a>
+                    </li>
+                    <li>
+                        <div th:if="${session != null and session.role == 'admin'}" class="dropdown">
+                            <button class="dropbtn">Administration</button>
+                            <div class="dropdown-content">
+                                <a th:href="@{/etudiants}">Etudiants</a>
+                                <a th:href="@{/profs}">Professeurs</a>
+                                <a th:href="@{/entreprises}">Entreprises</a>
+                                <a th:href="@{/administrateurs}">Administrateurs</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a th:href="@{/login}" th:unless="${not #strings.isEmpty(session.email)}">Connexion</a>
+                    </li>
+                    <li>
+                        <div  class="dropdown">
+                            <button class="dropbtn" th:text="${session.email}"></button>
+                            <div class="dropdown-content">
+                                <a onclick="openPopup()">Profile</a>
+                                <div th:if="${session != null}">
+                                    <a th:href="@{/deconnexion}" th:if="${!#strings.isEmpty(session.email)}">Quitter</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class ="language-switcher">
+                            <select id="language-select">
+                                <option value ="fr">Français</option>
+                                <option value ="en">English</option>
+                            </select>
+                            <script>
+                                const languageSwitcher = document.getElementById('language-select')
+                                languageSwitcher.addEventListener('change', function(){
+                                    const selectedLanguage = languageSwitcher.value;
+                                    window.location.href = '/' + selectedLanguage + '/';
+                                });
+                            </script>
+                        </div>
+                    </li>
+                </ul>
+
+            </nav>
+
+        </div>
+    </div>
+</header>
+<div th:if="${message!=null}" class="alert">
+    [[${message}]]
+</div>
+<h1>Liste de vos étudiants. Votre nom [[${nomProf}]]</h1>
+
+<div class="row" id="travailContenu" th:if="${listeEtudiantProf}">
+    <div class="card m-1 p-1 bg-light"
+         th:each="etudiant : ${listeEtudiantProf}">
+        <div class="etudiantDescrition">
+
+            <h4>
+                Nom:
+              <span class="badge badge-pill badge-primary float-right" th:text="${etudiant.nom}">
+              </span>
+            </h4>
+            <h4>
+                Prenom:
+              <span class="badge badge-pill badge-primary float-right" th:text="${etudiant.prenom}">
+              </span>
+            </h4>
+            <h4>
+                Retention (attente d'un interview):
+                <div class="card-text bg-white p-1">
+                    <span th:if="${etudiant.retenir}">En attente</span>
+                    <span th:unless="${etudiant.retenir}">Pas encore accepté</span>
+                </div>
+            </h4>
+            <h4>
+                Stage:
+              <span class="badge badge-pill badge-primary float-right" th:text="${etudiant.numeroStage}">
+              </span>
+            </h4>
+                Status
+            <div class="card-text bg-white p-1">
+                <span th:if="${etudiant.statusStage}">Dans un stage</span>
+                <span th:unless="${etudiant.statusStage}">Pas de stage</span>
+            </div>
+            <a class="link-delete"
+               th:href="@{'/etudiants_prof/delete/' + ${etudiant.id}}"
+               th:userId="${etudiant.id}"
+               title="Supprimer cet emploi">Supprimer  [[${etudiant.id}]]</a>
+
+
+        </div>
+    </div>
+</div>
+
+<div class="no-etudiants" th:if="${#lists.isEmpty(listeEtudiantProf)}">
+    <div class="stop-sign"></div>
+    <p class="no-etudiants-message">Vous n'avez pas d'étudiants</p>
+</div>
+
+</body>
+<style>
+    .row {
+        display: grid;
+        grid-auto-rows: minmax(200px, auto);
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1px;
+        justify-content: center;
+    }
+
+    .etudiantDescrition {
+        background-color: #f2f2f2;
+        padding: 10px;
+        transform: rotate(-2deg) scale(0.9);
+        box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+        max-width: 90%;
+        margin: 0 auto;
+    }
+
+    .etudiantDescrition:hover {
+        transform: rotate(2deg) scale(0.95);
+        z-index: 1;
+    }
+
+    .no-etudiants {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 50px;
+    }
+
+    .stop-sign {
+        width: 150px;
+        height: 150px;
+        background-color: red;
+        position: relative;
+        transform: rotate(45deg);
+        margin-bottom: 20px;
+    }
+
+    .stop-sign:before,
+    .stop-sign:after {
+        content: "";
+        display: block;
+        position: absolute;
+        background-color: white;
+    }
+
+    .stop-sign:before {
+        width: 20px;
+        height: 80px;
+        top: 35px;
+        left: 65px;
+    }
+
+    .stop-sign:after {
+        width: 80px;
+        height: 20px;
+        top: 65px;
+        left: 35px;
+    }
+
+    .no-etudiants-message {
+        font-size: 20px;
+        margin-top: 20px;
+    }
+</style>
+</html>

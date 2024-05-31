@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link th:href="@{/css/style.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/css/inscription.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/css/alert.css}" rel="stylesheet" type="text/css" />
+
+    <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="http://cdn.jsdelivr.net/jquery.validation/1.14.0/jquery.validate.min.js"></script>
+    <title>Connexion</title>
+</head>
+<body class="couleur">
+    <div class="formulaire">
+        <div class="contenu">
+            <a th:href="@{/}"><img th:src="@{/images/logo.PNG}"/></a>
+                <h1 class="h1">CONTENT DE VOUS REVOIR!</h1>
+            <div th:if="${message != null}" class="alert">
+                [[${message}]]
+            </div>
+                    <p>Mettez vos identifiants pour continuer</p>
+            <form method="post" th:object="${formulaire}" th:action="@{/login/connect}">
+                <div class="inputInscription">
+                    <select name="selection" onchange="showFields(this)">
+                        <option disabled selected>Choisissez une option</option>
+                        <option>Étudiant</option>
+                        <option>Professeur</option>
+                        <option>Entreprise</option>
+                        <option>Administrateur</option>
+                    </select>
+                    <br><br>
+                    <div id="etudiant-fields" class="form">
+                        <input th:field="*{etudiant.email}" placeholder="Email" type="text" />
+                        <input th:field="*{etudiant.password}" placeholder="Password" type="password" />
+                    </div>
+                    <div id="professeur-fields" class="form">
+                        <input th:field="*{prof.email}" placeholder="Email" type="text" />
+                        <input th:field="*{prof.password}" placeholder="Password" type="password" />
+                    </div>
+                    <div id="entreprise-fields" class="form">
+                        <input th:field="*{entreprise.email}" placeholder="Email" type="text" />
+                        <input th:field="*{entreprise.password}" placeholder="Password" type="password" />
+                    </div>
+                    <div id="admin-fields" class="form">
+                        <input th:field="*{administration.email}" placeholder="Email" type="text" />
+                        <input th:field="*{administration.password}" placeholder="Password" type="password" />
+                    </div>
+                </div>
+                <label>
+                    <input type="checkbox" name="RememberMe" value="YES" style="width: 20px">Se souvenir de moi
+                </label><br>
+                <p>Pas de compte?</p>
+                <a th:href="@{/index/new}">Créer un compte !</a>
+                <button type="submit" name="next" style="width: auto">Login</button><br>
+            </form>
+            <script>
+                function showFields(selectElement) {
+                    var selectedOption = selectElement.value;
+
+                    $(".form").hide();
+
+                    if (selectedOption === "Étudiant") {
+                        $("#etudiant-fields").show();
+                    } else if (selectedOption === "Professeur") {
+                        $("#professeur-fields").show();
+                    } else if (selectedOption === "Entreprise") {
+                        $("#entreprise-fields").show();
+                    }else if(selectedOption === "Administrateur"){
+                        $("#admin-fields").show();
+                    }
+                }
+
+                $(document).ready(function() {
+                    $(".form").hide();
+                    $("select[name='selection']").change(function() {
+                        showFields(this);
+                    });
+                });
+            </script>
+            <style>
+                .form {
+                    display: none;
+                }
+            </style>
+        </div>
+    </div>
+</body>
+</html>

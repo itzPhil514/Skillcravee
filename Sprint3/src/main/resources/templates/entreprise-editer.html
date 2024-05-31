@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Inscription</title>
+  <link th:href="@{/css/inscription.css}" rel="stylesheet" type="text/css" />
+  <link th:href="@{/css/alert.css}" rel="stylesheet" type="text/css" />
+  <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+  <script src="http://cdn.jsdelivr.net/jquery.validation/1.14.0/jquery.validate.min.js"></script>
+
+</head>
+<body class="couleur">
+<div class="formulaire">
+  <div class="contenu">
+    <a href= ""><img height="60"  width="80" src="images/logo.PNG"/></a>
+    <h1 class="h1">[[${PageTitle}]]</h1>
+    <div th:if="${message!=null}" class="alert">
+      [[${message}]]
+    </div>
+    <p>Entrez les informations suivantes :</p>
+
+    <form th:object="${entreprise}" th:action="@{/entreprises/save}" method="post">
+      <div class="inputInscription">
+        <br><br>
+        <input type="hidden" th:field="*{idInc}" />
+        <div id="professeur-fields" class="form-fields">
+          <input th:field="*{nom}" type="text" placeholder="Nom"/><br>
+          <input th:field="*{telephone}" type="text" placeholder="Nom"/><br>
+          <input th:field="*{address}" type="text" placeholder="Nom"/><br>
+          <input th:field="*{email}" type="text" placeholder="Email"/><br>
+          <input th:field="*{password}" type="password" placeholder="Password"/>
+        </div>
+      </div>
+      <br>
+      <button type="submit" class="bouton" name="next">Submit</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

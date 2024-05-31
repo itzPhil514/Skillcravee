@@ -1,0 +1,27 @@
+.bordure_recherche {
+    width: 220px;
+    height: 35px;
+    border: 1.5px solid rgb(224, 189, 189);
+    border-radius: 6px;
+    padding-left: 6px;
+    background-color: white;
+    box-shadow: 4px 4px rgb(196, 119, 119);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.recherche {
+    border: none;
+}
+
+img[alt|="loupe"] {
+    height: 27px;
+}
+
+textarea:focus,
+input:focus {
+    outline: none;
+}

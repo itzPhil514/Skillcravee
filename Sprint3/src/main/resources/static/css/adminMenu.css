@@ -1,0 +1,83 @@
+#logo{
+    width: 100px
+}
+#titre{
+    font-family: Candara;
+    padding-left: 15px;
+    color: rgb(29,97,74);
+}
+
+ul#liste {
+    min-width: 696px;
+    list-style: none;
+    padding-top: 20px;
+}
+
+ul#liste li {
+    display: inline;
+}
+
+#droite ul a{
+    text-decoration: none;
+    color: rgb(29,97,74);
+    padding-right: 30px;
+    font-family: Candara,sans-serif;
+    font-size: 19px;
+}
+
+header{
+    border-bottom: 1px solid rgb(82, 22, 22);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.tete{
+    padding-left: 4px;
+    padding-right: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+}
+.dropbtn {
+    background-color: white;
+    color: rgb(29,97,74);
+    padding-left: 4px;
+    padding: 10px;
+    font-size: 19px;
+    border: none;
+    cursor: pointer;
+    font-family: Candara,sans-serif;
+
+}
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: white;
+}
+

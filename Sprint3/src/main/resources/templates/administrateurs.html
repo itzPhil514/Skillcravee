@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+           <title>Afficher administrateurs</title>
+
+         <link rel="stylesheet" href="">
+    </head>
+    <body>
+    <header>
+        <meta charset="UTF-8">
+        <title>Accueil</title>
+        <link th:href="@{/css/menuCSS.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/css/alert.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/css/recherche.css}" rel="stylesheet" type="text/css" />
+        <link th:href="@{/css/tableGestion.css}" rel="stylesheet" type="text/css" />
+        <div class='tete'>
+            <div class="banniere">
+                <table>
+                    <tr>
+                        <th><a th:href="@{/}"><img id="logo" th:src="@{images/logo.PNG}" alt="logo" /></a></th>
+                        <th><h1 id="titre">Skillcravee</h1></th>
+                    </tr>
+                </table>
+            </div>
+            <div id='droite'>
+                <nav>
+                    <ul id='liste'>
+
+                        <li class="active"><a th:href="@{/}">Accueil</a></li>
+
+                        <li>
+                            <div th:if="${session != null and session.role == 'étudiant'}">
+                                <a
+                                        th:href="@{/uploader}">Téléchargez CV
+                                </a>
+                            </div>
+                        </li>
+                        <li>
+                            <div th:if="${session != null and (session.role == 'entreprise' or session.role == 'admin')}">
+                                <a th:href="@{'/emploi/new'}" title="Ajouter un emploi">Ajouter un emploi</a>
+                            </div>
+                        </li>
+                        <li>
+                            <a
+                                    th:href="@{/index/new}" th:unless="${not #strings.isEmpty(session.email)}">Inscription
+                            </a>
+                        </li>
+                        <li>
+                            <div th:if="${session != null and session.role == 'admin'}" class="dropdown">
+                                <button class="dropbtn">Administration</button>
+                                <div class="dropdown-content">
+                                    <a th:href="@{/etudiants}">Etudiants</a>
+                                    <a th:href="@{/profs}">Professeurs</a>
+                                    <a th:href="@{/entreprises}">Entreprises</a>
+                                    <a th:href="@{/administrateurs}">Administrateurs</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <a th:href="@{/login}" th:unless="${not #strings.isEmpty(session.email)}">Connexion</a>
+                        </li>
+                        <li>
+                            <div  class="dropdown">
+                                <button class="dropbtn" th:text="${session.email}"></button>
+                                <div class="dropdown-content">
+                                    <a onclick="openPopup()">Profile</a>
+                                    <div th:if="${session != null}">
+                                        <a th:href="@{/deconnexion}" th:if="${!#strings.isEmpty(session.email)}">Quitter</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class ="language-switcher">
+                                <select id="language-select">
+                                    <option value ="fr">Français</option>
+                                    <option value ="en">English</option>
+                                </select>
+                                <script>
+                                    const languageSwitcher = document.getElementById('language-select')
+                                    languageSwitcher.addEventListener('change', function(){
+                                        const selectedLanguage = languageSwitcher.value;
+                                        window.location.href = '/' + selectedLanguage + '/';
+                                    });
+                                </script>
+                            </div>
+                        </li>
+                    </ul>
+
+                </nav>
+
+            </div>
+        </div>
+    </header>
+    <div th:if="${message!=null}" class="alert">
+        [[${message}]]
+    </div>
+    <div class="bordure_recherche centrer_recherche">
+        <form th:action="@{rechercher/administrateurs}">
+            <table>
+                <tr>
+                    <td>
+                        <input th:value="${keyword}" name="keyword" type="search" placeholder="Nom administrateur" class="recherche" required/>
+                    </td>
+                    <td style="text-align: right;">
+                        <button type="submit" style="border: none;background-color: white">
+                            <img src="images/loupe.png" alt="loupe">
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <h2>Vos informations</h2>
+
+            <div th:if="${session != null and session.role == 'étudiant'}">
+                Vous êtes un: <div style="font-style: italic;" th:text="${session.role}"></div><br>
+            </div>
+            <div th:if="${session != null and session.role == 'prof'}">
+                Vous êtes un: <div style="font-style: italic;" th:text="${session.role}"></div><br>
+            </div>
+            <div th:if="${session != null and session.role == 'entreprise'}">
+                Vous êtes un: <div style="font-style: italic;" th:text="${session.role}"></div><br>
+            </div>
+            <div th:if="${session != null and session.role == 'admin'}">
+                Vous êtes un: <div style="font-style: italic;" th:text="${session.role}"></div><br>
+            </div>
+
+            Votre Email: <div th:text="${session.email}"></div><br>
+            Votre Password: <div th:text="${session.password}"></div><br>
+
+            <div th:if="${session != null and session.role == 'étudiant'}">
+                Votre Nom: <div th:text="${session.nomEtud}"></div><br>
+                Votre Prenom: <div th:text="${session.prenomEtud}"></div><br>
+                Status de Stage: <div th:text="${session.statusStage}"></div><br>
+                Le numero de Stage: <div th:text="${session.numeroStage}"></div><br>
+                <div th:text="${session.retenir}"></div><br>
+            </div>
+            <div th:if="${session != null and session.role == 'prof'}">
+                Votre Nom: <div th:text="${session.nomProf}"></div><br>
+                Votre Prenom:<div th:text="${session.prenomProf}"></div><br>
+            </div>
+            <div th:if="${session != null and session.role == 'entreprise'}">
+                Le nom de l'entreprise: <div th:text="${session.nomInc}"></div><br>
+                L'address: <div th:text="${session.address}"></div><br>
+                Telephone: <div th:text="${session.telephone}"></div><br>
+            </div>
+            <div th:if="${session != null and session.role == 'admin'}">
+                Votre Nom: <div th:text="${session.nomAdmin}"></div><br>
+                Votre Prenom: <div th:text="${session.prenomAdmin}"></div><br>
+                Votre UserName: <div th:text="${session.username}"></div><br>
+            </div>
+        </div>
+    </div>
+
+         <h1>Liste des administrateurs</h1>
+        <table style="width:100%">
+            <thead>
+                <tr>
+                   <th> Id </th>
+                   <th> Username </th>
+                   <th> Nom </th>
+                   <th> Prenom </th>
+                   <th> Email </th>
+                   <th> Password </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="admin : ${listeAdmins}">
+                    <th>[[${admin.id}]]</th>
+                    <th>[[${admin.username}]]</th>
+                    <th>[[${admin.nom}]]</th>
+                    <th>[[${admin.prenom}]]</th>
+                    <th>[[${admin.email}]]</th>
+                    <th>[[${admin.password}]]</th>
+                    <th>
+                        <a th:href="@{'/administrateurs/edit/' + ${admin.id}}" title="Editer">Editer</a>
+                    </th>
+                    <th>
+                        <a class="link-delete"
+                           th:href="@{'/administrateurs/delete/' + ${admin.id}}"
+                           th:userId="${admin.id}"
+                           title="Supprimer cet administrateur">Supprimer  [[${admin.id}]]</a>
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+    <style>
+
+        .travail {
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color:white;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        .yo {
+            display: flex;
+            align-items: center;
+        }
+
+        .yo img {
+            height: 35px;
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .job-title {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .body-container {
+            display: flex;
+        }
+
+        .left {
+            flex: 0 0 auto;
+        }
+
+        .center {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-content {
+            animation: show-modal 0.3s;
+        }
+
+        @keyframes show-modal {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+
+    </style>
+    <script>
+        const showInfoBtns = document.querySelectorAll('.show-info-btn');
+
+        showInfoBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const jobInfo = this.parentNode.nextElementSibling.querySelector('.job-info');
+
+                this.classList.toggle('expanded');
+                jobInfo.style.display = this.classList.contains('expanded') ? 'block' : 'none';
+                const jobInfoContainer = this.parentNode.nextElementSibling;
+                jobInfoContainer.classList.toggle('bordered');
+
+                if (this.classList.contains('expanded')) {
+                    this.textContent = '-';
+                } else {
+                    this.textContent = '+';
+                }
+            });
+        });
+
+        function openPopup() {
+            document.getElementById("myModal").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("myModal").style.display = "none";
+        }
+    </script>
+</html>

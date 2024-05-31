@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Afficher professeurs</title>
+
+    <link rel="stylesheet" href="">
+</head>
+<body>
+<header>
+    <meta charset="UTF-8">
+    <title>Accueil</title>
+    <link th:href="@{/css/menuCSS.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/css/alert.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/css/recherche.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/css/tableGestion.css}" rel="stylesheet" type="text/css" />
+    <div class='tete'>
+        <div class="banniere">
+            <table>
+                <tr>
+                    <th><a th:href="@{/}"><img id="logo" th:src="@{images/logo.PNG}" alt="logo" /></a></th>
+                    <th><h1 id="titre">Skillcravee</h1></th>
+                </tr>
+            </table>
+        </div>
+        <div id='droite'>
+            <nav>
+                <ul id='liste'>
+
+                    <li class="active"><a th:href="@{/}">Accueil</a></li>
+
+                    <li>
+                        <div th:if="${session != null and session.role == 'étudiant'}">
+                            <a
+                                    th:href="@{/uploader}">Téléchargez CV
+                            </a>
+                        </div>
+                    </li>
+                    <li>
+                        <div th:if="${session != null and (session.role == 'entreprise' or session.role == 'admin')}">
+                            <a th:href="@{'/emploi/new'}" title="Ajouter un emploi">Ajouter un emploi</a>
+                        </div>
+                    </li>
+                    <li>
+                        <a
+                                th:href="@{/index/new}" th:unless="${not #strings.isEmpty(session.email)}">Inscription
+                        </a>
+                    </li>
+                    <li>
+                        <div th:if="${session != null and session.role == 'admin'}" class="dropdown">
+                            <button class="dropbtn">Administration</button>
+                            <div class="dropdown-content">
+                                <a th:href="@{/etudiants}">Etudiants</a>
+                                <a th:href="@{/profs}">Professeurs</a>
+                                <a th:href="@{/entreprises}">Entreprises</a>
+                                <a th:href="@{/administrateurs}">Administrateurs</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <a th:href="@{/login}" th:unless="${not #strings.isEmpty(session.email)}">Connexion</a>
+                    </li>
+                    <li>
+                        <div  class="dropdown">
+                            <button class="dropbtn" th:text="${session.email}"></button>
+                            <div class="dropdown-content">
+                                <a onclick="openPopup()">Profile</a>
+                                <div th:if="${session != null}">
+                                    <a th:href="@{/deconnexion}" th:if="${!#strings.isEmpty(session.email)}">Quitter</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class ="language-switcher">
+                            <select id="language-select">
+                                <option value ="fr">Français</option>
+                                <option value ="en">English</option>
+                            </select>
+                            <script>
+                                const languageSwitcher = document.getElementById('language-select')
+                                languageSwitcher.addEventListener('change', function(){
+                                    const selectedLanguage = languageSwitcher.value;
+                                    window.location.href = '/' + selectedLanguage + '/';
+                                });
+                            </script>
+                        </div>
+                    </li>
+                </ul>
+
+            </nav>
+
+        </div>
+    </div>
+</header>
+<div th:if="${message!=null}" class="alert">
+    [[${message}]]
+</div>
+<div class="bordure_recherche centrer_recherche">
+    <form th:action="@{rechercher/profs}">
+        <table>
+            <tr>
+                <td>
+                    <input th:value="${keyword}" name="keyword" type="search" placeholder="Nom professeur" class="recherche" required/>
+                </td>
+                <td style="text-align: right;">
+                    <button type="submit" style="border: none;background-color: white">
+                        <img src="images/loupe.png" alt="loupe">
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<h1>Liste des professeurs</h1>
+<table style="width:100%">
+    <thead>
+        <tr>
+            <th> Id </th>
+            <th> Nom </th>
+            <th> Prenom </th>
+            <th> Email </th>
+            <th> Password </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="prof : ${listeProfs}">
+            <th>[[${prof.idProf}]]</th>
+            <th>[[${prof.nom}]]</th>
+            <th>[[${prof.prenom}]]</th>
+            <th>[[${prof.email}]]</th>
+            <th>[[${prof.password}]]</th>
+            <th>
+                <a th:href="@{'/profs/edit/' + ${prof.idProf}}" title="Editer">Editer</a>
+            </th>
+            <th>
+                <a class="link-delete"
+                   th:href="@{'/profs/delete/' + ${prof.idProf}}"
+                   th:userId="${prof.idProf}"
+                   title="Supprimer cet professeur">Supprimer  [[${prof.idProf}]]</a>
+            </th>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>

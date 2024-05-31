@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Inscription</title>
+  <link th:href="@{/css/inscription.css}" rel="stylesheet" type="text/css" />
+  <link th:href="@{/css/alert.css}" rel="stylesheet" type="text/css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" ></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
+
+</head>
+<body class="couleur">
+<div class="formulaire">
+  <div class="contenu">
+    <a th:href= "@{/}"><img height="60"  width="80" th:src="@{/images/logo.PNG}"/></a>
+    <h1 class="h1">BIENVENUE</h1>
+    <div th:if="${message!=null}" class="alert">
+      [[${message}]]
+    </div>
+    <p>Entrez les informations suivantes :</p>
+
+    <form th:object="${formulaire}" th:action="@{/index/save}"  method="post" enctype="multipart/form-data" onsubmit="return checkEmailUnique(this);">
+      <div class="inputInscription">
+        <select name="selection" onchange="showFields(this)">
+          <option>Choisissez une option</option>
+          <option>Étudiant</option>
+          <option>Professeur</option>
+          <option>Entreprise</option>
+        </select>
+        <br><br>
+        <div id="etudiant-fields" class="form-fields">
+          <input th:field="*{etudiant.nom}" type="text" placeholder="Nom"/>
+
+          <!-- Erreur:
+          L'application a rencontré une erreur de serveur interne (500)
+          en raison d'une violation d'entrée en double pour une contrainte de clé unique dans la base de données.
+
+          En l'enlevant, l'ajout d'un etudiant marche.
+
+          <input type="hidden" th:field="*{etudiant.id}" /> -->
+
+          <input th:field="*{etudiant.prenom}" type="text" placeholder="Prenom"/>
+          <input th:field="*{etudiant.email}" type="text" placeholder="Email"/>
+          <input th:field="*{etudiant.password}" type="password" placeholder="Password"/>
+          <input th:field="*{etudiant.emploi}" th:value="${null}" type="hidden" placeholder="Emploi"/>
+          <input th:field="*{etudiant.prof}" th:value="${null}" type="hidden" placeholder="Prof"/>
+
+          <div class="col-sm-10">
+            <input type="file" id="file" name="file"/>
+          </div>
+        </div>
+        <div id="professeur-fields" class="form-fields">
+          <input th:field="*{prof.nom}" type="text" placeholder="Nom"/>
+          <input th:field="*{prof.prenom}" type="text" placeholder="Prenom"/>
+          <input type="email" th:field="*{prof.email}" placeholder="Email"/>
+          <input th:field="*{prof.password}" type="password" placeholder="Password"/>
+        </div>
+        <div id="entreprise-fields" class="form-fields">
+          <input th:field="*{entreprise.nom}" type="text" placeholder="Nom"/>
+          <input th:field="*{entreprise.address}" type="text" placeholder="Adress"/>
+          <input th:field="*{entreprise.telephone}" type="text" placeholder="Telephone"/>
+          <input th:field="*{entreprise.email}" type="text" placeholder="Email"/>
+          <input th:field="*{entreprise.password}" type="password" placeholder="Password"/>
+        </div>
+      </div>
+      <br>
+      <p>Déjà inscrit ?</p>
+      <a th:href="@{/login}">Connectez-vous</a>
+      <button type="submit" class="bouton" name="next">Submit</button>
+    </form>
+
+    <div class="modal fade text-center" id="modalDialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="modalTitle">Avertissement</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <span id="modalBody"></span>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showFields(selectElement) {
+        var selectedOption = selectElement.value;
+
+
+        $(".form-fields").hide();
+
+
+        if (selectedOption === "Étudiant") {
+          $("#etudiant-fields").show();
+        } else if (selectedOption === "Professeur") {
+          $("#professeur-fields").show();
+        } else if (selectedOption === "Entreprise") {
+          $("#entreprise-fields").show();
+        }
+      }
+
+      $(document).ready(function() {
+
+        $(".form-fields").hide();
+
+        // Show form fields based on selected option
+        $("select[name='selection']").change(function() {
+          showFields(this);
+        });
+      });
+
+      function checkEmailUnique(form) {
+        if (validateFile(document.getElementById('file')) === false) {
+          return false;
+        }
+
+        $.ajax({
+          type: 'POST',
+          url: '/index/check_email', // Replace with the correct URL
+          data: { email: $("#etudiant.email").val(), id: $("#etudiant.id").val() },
+
+          success: function (data) {
+            if (data === 'OK') {
+              form.submit();
+            } else {
+              showModalDialog("Avertissement", "Il y a déjà un étudiant avec le même email: " + $("#etudiant.email").val());
+            }
+          }
+        });
+      }
+
+      function showModalDialog(title, message) {
+        $("#modalTitle").text(title);
+        $("#modalBody").text(message);
+        $("#modalDialog").modal();
+      }
+
+      $(document).ready(function() {
+        $("#buttonCancel").on("click", function() {
+          window.location = "/inscription_form"; // Replace with the correct URL
+        });
+      });
+
+      function validateFile(input) {
+        let fileSize = input.files[0].size;
+        let maxSize = 10 * 1024 * 1024; // 10 MB
+
+        if (fileSize > maxSize) {
+          showModalDialog("Erreur", "la taille " + fileSize + " du fichier  " + $("#file").val()+ " dépasse la taille limite autorisée qui est " + maxSize+ " soit 10MB")
+          input.value = ""; // Efface le champ de saisie de fichier
+          return false;
+        }
+
+        return true;
+      }
+    </script>
+    <style>
+      .form-fields {
+        display: none;
+      }
+    </style>
+  </div>
+</div>
+</body>
+</html>

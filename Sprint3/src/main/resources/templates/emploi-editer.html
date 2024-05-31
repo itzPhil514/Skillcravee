@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Inscription</title>
+  <link th:href="@{/css/inscription.css}" rel="stylesheet" type="text/css" />
+  <link th:href="@{/css/alert.css}" rel="stylesheet" type="text/css" />
+  <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+  <script src="http://cdn.jsdelivr.net/jquery.validation/1.14.0/jquery.validate.min.js"></script>
+
+</head>
+<body class="couleur">
+<div class="formulaire">
+  <div class="contenu">
+    <a th:href= "@{/}"><img height="60"  width="80" th:src="@{/images/logo.PNG}"/></a>
+    <h1 class="h1">[[${PageTitle}]]</h1>
+    <div th:if="${message!=null}" class="alert">
+      [[${message}]]
+    </div>
+    <p>Entrez les informations suivantes :</p>
+
+    <form th:object="${emploi}" th:action="@{/emploi/save}" method="post">
+      <div class="inputInscription">
+        <br><br>
+        <input type="hidden" th:field="*{id}" />
+        <div id="professeur-fields" class="form-fields">
+          <input th:field="*{titre}" type="text" placeholder="Nom"/><br>
+           <input th:field="*{description}" type="text" placeholder="Description" style="width: 300px; height: 140px"/><br>
+          Date début:<input th:field="*{date_debut}"  type="date" placeholder="Date début"/><br>
+          Date fin:<input th:field="*{date_fin}"  type="date" placeholder="Date fin"/><br>
+          <input id="salaireInput" oninput="ajouterSigneDollar()" th:field="*{salaire}" type="text" placeholder="Salaire annuel"/>
+        </div>
+        <label>Entreprise:</label>
+        <select  class="form-control" required th:field="*{entreprise}">
+          <th:block th:each="entreprise : ${listeEntreprise}">
+            <option th:value="${entreprise.idInc}" th:text="${entreprise.nom}"></option>
+          </th:block>
+        </select>
+      </div>
+      <br>
+      <button type="submit" class="bouton" name="next">Submit</button>
+    </form>
+  </div>
+</div>
+<script>
+  function ajouterSigneDollar() {
+    var salaireInput = document.getElementById("salaireInput");
+    var value = salaireInput.value;
+    value = value.replace(/[$\s]/g, "");
+    if (value.length > 0) {
+      value = value + "$";
+    }
+    salaireInput.value = value;
+  }
+</script>
+</body>
+</html>
